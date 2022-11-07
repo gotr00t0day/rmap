@@ -1,12 +1,33 @@
+import nmap
 from utils import exec_cmd, exec_cmd_bash
 import argparse
+import os
+
+def init():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--ip', type=str, required=True)
+
+    args = parser.parse_args()
+    
+    return args
 
 
-parser = argparse.ArgumentParser(description='Optional app description')
+def nmap(host):
+    return exec_cmd(f"nmap -sC -sV {host}")
 
-parser.add_argument('--ip', type=str, required=True)
 
+def main():
+    args = init()
+    cwd = os.getcwd()
+    global input_cwd
+    input_cwd = input(f"Use {cwd} as working directory? (yes or no)")
 
-args = parser.parse_args()
+    if input_cwd != "yes":
+        input_cwd = input(f"Enter the work directory path. ")
+    else:
+        input_cwd = cwd
+    
+    print(nmap(args.ip))
 
-print(args.ip)
+main()
