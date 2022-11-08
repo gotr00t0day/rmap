@@ -1,4 +1,5 @@
 import nmap
+from colorama import Fore
 from utils import exec_cmd, exec_cmd_bash
 import argparse
 import os
@@ -6,7 +7,7 @@ import os
 def init():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--ip', type=str, required=True)
+    parser.add_argument('--ip', type=str, required=True, help="IP Address")
 
     args = parser.parse_args()
     
