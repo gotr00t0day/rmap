@@ -1,4 +1,0 @@
-# Nmap 7.92 scan initiated Wed Nov  9 00:45:47 2022 as: /usr/bin/nmap -sC -sV -oA nmap/nmap_28722accd946472fb82cd609c2a7e710 localhost
-Host: 127.0.0.1 (localhost)	Status: Up
-Host: 127.0.0.1 (localhost)	Ports: 3306/open/tcp//mysql//MySQL 5.5.5-10.6.10-MariaDB/	Ignored State: closed (999)
-# Nmap done at Wed Nov  9 00:45:47 2022 -- 1 IP address (1 host up) scanned in 0.45 seconds

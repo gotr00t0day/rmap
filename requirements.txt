@@ -1,3 +1,5 @@
 python-nmap
 pexpect
 colorama
+xmltodict
+python-libnmap
