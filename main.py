@@ -1,8 +1,10 @@
 import nmap
 from colorama import Fore
-from utils import exec_cmd, exec_cmd_bash
+from utils import exec_cmd, exec_cmd_bash, hex_uuid
 import argparse
 import os
+import xmltodict
+import json
 
 def init():
     parser = argparse.ArgumentParser()
@@ -15,7 +17,18 @@ def init():
 
 
 def nmap(host):
-    return exec_cmd(f"nmap -sC -sV {host}")
+
+    exec_cmd("mkdir -p nmap")
+
+    resultout = f"nmap_{hex_uuid()}"
+
+    exec_cmd(f"nmap -sC -sV {host} -oA nmap/{resultout}")
+    with open("nmap/" + resultout + ".xml") as f:
+        xml = f.read()
+        d = json.loads(json.dumps(xmltodict.parse(xml)))
+
+        print(d)
+
 
 
 def main():

@@ -1,4 +1,5 @@
 import pexpect
+import uuid
 
 exec_timeout = 86400 # 24 hours
 
@@ -13,3 +14,7 @@ def exec_cmd_bash(cmd_str):
 
     p.close()
     return p.before, p.exitstatus
+
+
+def hex_uuid():
+    return uuid.uuid4().hex
