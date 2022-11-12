@@ -77,7 +77,7 @@ def parse_nmap_file(path_xml):
         service = service.split(":")
         if service[0] == "http":
             ffuf_dir_enum(host.address,service[1])
-        elif service[0] == "netbios-ssn":
+        elif service[0] == "microsoft-ds":
             nmap_smb_enum(host.address,service[1])
 
 
