@@ -1,8 +1,18 @@
 import pexpect
 import uuid
+import os
 
 exec_timeout = 86400 # 24 hours
 
+def check_ping(ip):
+    response = os.system("ping -c 1 " + ip + " > /dev/null")
+    # and then check the response...
+    if response == 0:
+        pingstatus = True
+    else:
+        pingstatus = False
+    
+    return pingstatus
 
 def exec_cmd(cmd_str):
     return pexpect.run(cmd_str, encoding='utf-8', timeout=exec_timeout)

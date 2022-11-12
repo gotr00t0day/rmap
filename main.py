@@ -1,6 +1,6 @@
 import nmap
 from colorama import Fore
-from utils import exec_cmd, exec_cmd_bash, hex_uuid
+from utils import exec_cmd, exec_cmd_bash, hex_uuid, check_ping
 import argparse
 import os
 import xmltodict
@@ -102,6 +102,10 @@ def main():
     cwd = os.getcwd()
     banner()
     
+    if not check_ping(args.ip):
+        logging.error("Did not pass ping check.")
+        sys.exit()
+
     nmap(args.ip)
     #parse_nmap_file("nmap/nmap_58ef8adb86194a34b4ecf1f6222598f1.xml")
 
