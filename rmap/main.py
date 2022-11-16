@@ -9,12 +9,13 @@ import sys
 from libnmap.parser import NmapParser
 
 class RMap:
-    def __init__(self, host, nmap_all_ports, ffuf_wordlist, ffuf_outtype):
+    def __init__(self, host, nmap_all_ports, nmap_arguments, ffuf_wordlist, ffuf_outtype):
         self.host = host
         self.ffuf_wordlist = ffuf_wordlist
         self.ffuf_outtype = ffuf_outtype
         self.services = []
         self.nmap_all_ports = nmap_all_ports
+        self.nmap_arguments = nmap_arguments
 
         self.nmap()
         
@@ -24,9 +25,9 @@ class RMap:
         resultout = f"nmap_{self.host}"
 
         if self.nmap_all_ports:
-            cmdnmap = f"nmap -sC -sV -p- -oA nmap/{resultout} {self.host}"
+            cmdnmap = f"nmap {self.nmap_arguments} -p- -oA nmap/{resultout} {self.host}"
         else:
-            cmdnmap = f"nmap -sC -sV -oA nmap/{resultout} {self.host}"
+            cmdnmap = f"nmap {self.nmap_arguments} -oA nmap/{resultout} {self.host}"
 
         print(Fore.RED + "[*]" + Fore.BLUE + f' Running...{cmdnmap}' + Fore.RESET)
         exec_cmd(cmdnmap)
@@ -41,8 +42,8 @@ class RMap:
         exec_cmd("mkdir -p ffuf")
         resultout = f"ffuf_{self.host}:{port}"
         cmdffuf = f"ffuf -w {self.ffuf_wordlist} -u http://{self.host}:{port}/FUZZ -o ffuf/{resultout}.{self.ffuf_outtype} -of {self.ffuf_outtype} -fc 302"
-        print(Fore.RED + "[*]" + Fore.GREEN + f' [HTTP DETECTED] [{self.host}:{port}] Running...{cmdffuf}' + Fore.RESET)
-        exec_cmd_bash(f"{cmdffuf} > ffuf/{resultout}.log")
+        print(Fore.RED + "[*]" + Fore.GREEN + f' [HTTP DETECTED] [{port}] Running...{cmdffuf}' + Fore.RESET)
+        exec_cmd_bash(f"{cmdffuf} > ffuf/{resultout}.txt")
 
 
     def nmap_smb_enum(self, port):
@@ -50,9 +51,16 @@ class RMap:
         resultout = f"smb_{self.host}:{port}"
         cmdnmap = f"nmap --script=smb-enum-shares.nse,smb-enum-users.nse -p {port} -oA nmap/{resultout} {self.host}"
 
-        print(Fore.RED + "[*]" + Fore.GREEN + f' [SMB DETECTED] [{self.host}:{port}] Running...{cmdnmap}' + Fore.RESET)
+        print(Fore.RED + "[*]" + Fore.GREEN + f' [SMB DETECTED] [{port}] Running...{cmdnmap}' + Fore.RESET)
         exec_cmd(cmdnmap)
+    
+    def nmap_ftp_enum(self, port):
+        exec_cmd("mkdir -p ftp")
+        resultout = f"ftp_{self.host}:{port}"
+        cmdnmap = f"nmap --script ftp-* -p {port} -oA ftp/{resultout} {self.host}"
 
+        print(Fore.RED + "[*]" + Fore.GREEN + f' [FTP DETECTED] [{port}] Running...{cmdnmap}' + Fore.RESET)
+        exec_cmd(cmdnmap)
 
     def parse_nmap_file(self, path_xml):
         nmap_report = NmapParser.parse_fromfile(path_xml)
@@ -73,6 +81,8 @@ class RMap:
     def analyse_nmap(self):
         for service in self.services:
             service = service.split(":")
+            if service[0] == "ftp":
+                self.nmap_ftp_enum(service[1])
             if service[0] == "http":
                 self.ffuf_dir_enum(service[1])
             elif service[0] == "microsoft-ds":

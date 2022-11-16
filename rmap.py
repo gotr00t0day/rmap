@@ -35,13 +35,14 @@ def main():
     config_object.read("rmap.conf")
 
     nmap_all_ports = config_object["nmap"]["allports"]
+    nmap_arguments = config_object["nmap"]["arguments"]
     ffuf_wordlist = config_object["ffuf"]["wordlist"]
     ffuf_outtype = config_object["ffuf"]["outtype"]
 
     if nmap_all_ports == "false":
         nmap_all_ports = False
 
-    RMap(args.ip, nmap_all_ports, ffuf_wordlist, ffuf_outtype)
+    RMap(args.ip, nmap_all_ports, nmap_arguments, ffuf_wordlist, ffuf_outtype)
 
 
 main()
