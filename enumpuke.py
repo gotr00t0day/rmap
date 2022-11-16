@@ -17,6 +17,7 @@ def init():
 
     parser.add_argument('--ip', type=str, required=True, help="IP Address")
     parser.add_argument('--cwd', type=str, help="Working Directory")
+    parser.add_argument('--wl', type=str, help="Wordlist")
 
     args = parser.parse_args()
     
@@ -43,11 +44,17 @@ def nmap(host):
 def ffuf_dir_enum(host, port):
     exec_cmd("mkdir -p ffuf")
     resultout = f"ffuf_{hex_uuid()}"
-    cmdffuf = f"ffuf -w /usr/share/seclists/Discovery/Web-Content/big.txt -o ffuf/{resultout}.md -fc 302 -u http://{host}:{port}/FUZZ"
-
+    cmdffuf = f"ffuf -w /Users/c0deninja/SecLists/Discovery/Web-Content/directory-list-1.0.txt -u http://{host}:{port}/FUZZ -o ffuf/{resultout}.md -fc 302"
     logging.info(f'[HTTP DETECTED] Running...{cmdffuf}')
     print(exec_cmd(cmdffuf))
 
+def ffuf_dir_enum_wl(host, port):
+    args = init()
+    exec_cmd("mkdir -p ffuf")
+    resultout = f"ffuf_{hex_uuid()}"
+    cmdffuf = f"ffuf -w {args.wl} -u http://{host}:{port}/FUZZ -o ffuf/{resultout}.md -fc 302"
+    logging.info(f'[HTTP DETECTED] Running...{cmdffuf}')
+    print(exec_cmd(cmdffuf))
 
 
 def nmap_smb_enum(host, port):
