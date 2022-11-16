@@ -9,10 +9,12 @@ import sys
 from libnmap.parser import NmapParser
 
 class RMap:
-    def __init__(self, host, ffuf_wordlist):
+    def __init__(self, host, nmap_all_ports, ffuf_wordlist, ffuf_outtype):
         self.host = host
         self.ffuf_wordlist = ffuf_wordlist
+        self.ffuf_outtype = ffuf_outtype
         self.services = []
+        self.nmap_all_ports = nmap_all_ports
 
         self.nmap()
         
@@ -21,7 +23,10 @@ class RMap:
 
         resultout = f"nmap_{self.host}"
 
-        cmdnmap = f"nmap -sC -sV -oA nmap/{resultout} {self.host}"
+        if self.nmap_all_ports:
+            cmdnmap = f"nmap -sC -sV -p- -oA nmap/{resultout} {self.host}"
+        else:
+            cmdnmap = f"nmap -sC -sV -oA nmap/{resultout} {self.host}"
 
         print(Fore.RED + "[*]" + Fore.BLUE + f' Running...{cmdnmap}' + Fore.RESET)
         exec_cmd(cmdnmap)
@@ -35,9 +40,9 @@ class RMap:
     def ffuf_dir_enum(self, port):
         exec_cmd("mkdir -p ffuf")
         resultout = f"ffuf_{self.host}:{port}"
-        cmdffuf = f"ffuf -w {self.ffuf_wordlist} -u http://{self.host}:{port}/FUZZ -o ffuf/{resultout}.md -fc 302"
+        cmdffuf = f"ffuf -w {self.ffuf_wordlist} -u http://{self.host}:{port}/FUZZ -o ffuf/{resultout}.{self.ffuf_outtype} -of {self.ffuf_outtype} -fc 302"
         print(Fore.RED + "[*]" + Fore.GREEN + f' [HTTP DETECTED] [{self.host}:{port}] Running...{cmdffuf}' + Fore.RESET)
-        exec_cmd(cmdffuf)
+        exec_cmd_bash(f"{cmdffuf} > ffuf/{resultout}.log")
 
 
     def nmap_smb_enum(self, port):
