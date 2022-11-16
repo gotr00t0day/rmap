@@ -50,5 +50,5 @@ def main():
 
     RMap(args.ip, nmap_all_ports, nmap_arguments, ffuf_wordlist, ffuf_outtype)
 
-
-main()
+if __name__ == "__main__":
+    main()
