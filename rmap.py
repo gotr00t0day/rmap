@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from rmap.main import RMap
 from rmap.banner import banner
 from rmap.utils import check_ping
@@ -9,6 +11,10 @@ import sys
 if sys.version_info.major < 3:
     print("RMap supports only Python3. Rerun application in Python3 environment.")
     exit(0)
+
+if os.geteuid() != 0:
+    print("RMap must run as root. Rerun application using sudo.")
+    exit(0)    
 
 def init():
     parser = argparse.ArgumentParser()

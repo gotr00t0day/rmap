@@ -29,7 +29,7 @@ class RMap:
         else:
             cmdnmap = f"nmap {self.nmap_arguments} -oA nmap/{resultout} {self.host}"
 
-        print(Fore.RED + "[*]" + Fore.BLUE + f' Running...{cmdnmap}' + Fore.RESET)
+        print(Fore.RED + "[*]" + Fore.MAGENTA + f' [EXEC] ' + Fore.RESET + Fore.BLUE + cmdnmap + Fore.RESET)
         exec_cmd(cmdnmap)
 
         xml_path = f"nmap/{resultout}.xml"
@@ -42,25 +42,26 @@ class RMap:
         exec_cmd("mkdir -p ffuf")
         resultout = f"ffuf_{self.host}:{port}"
         cmdffuf = f"ffuf -w {self.ffuf_wordlist} -u http://{self.host}:{port}/FUZZ -o ffuf/{resultout}.{self.ffuf_outtype} -of {self.ffuf_outtype} -fc 302"
-        print(Fore.RED + "[*]" + Fore.GREEN + f' [HTTP DETECTED] [{port}] Running...{cmdffuf}' + Fore.RESET)
+        print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [HTTP DETECTED]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + cmdffuf + Fore.RESET)
         exec_cmd_bash(f"{cmdffuf} > ffuf/{resultout}.txt")
 
 
     def nmap_smb_enum(self, port):
-        exec_cmd("mkdir -p nmap")
+        exec_cmd("mkdir -p smb")
         resultout = f"smb_{self.host}:{port}"
-        cmdnmap = f"nmap --script=smb-enum-shares.nse,smb-enum-users.nse -p {port} -oA nmap/{resultout} {self.host}"
+        cmdnmap = f"nmap --script \"safe or smb-enum-*\" -p {port} -oN smb/{resultout} {self.host}"
 
-        print(Fore.RED + "[*]" + Fore.GREEN + f' [SMB DETECTED] [{port}] Running...{cmdnmap}' + Fore.RESET)
+        print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [SMB DETECTED]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + cmdnmap + Fore.RESET)
         exec_cmd(cmdnmap)
     
     def nmap_ftp_enum(self, port):
         exec_cmd("mkdir -p ftp")
         resultout = f"ftp_{self.host}:{port}"
-        cmdnmap = f"nmap --script ftp-* -p {port} -oA ftp/{resultout} {self.host}"
+        cmdnmap = f"nmap --script ftp-* -p {port} -oN ftp/{resultout} {self.host}"
 
-        print(Fore.RED + "[*]" + Fore.GREEN + f' [FTP DETECTED] [{port}] Running...{cmdnmap}' + Fore.RESET)
+        print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [FTP DETECTED]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + cmdnmap + Fore.RESET)
         exec_cmd(cmdnmap)
+
 
     def parse_nmap_file(self, path_xml):
         nmap_report = NmapParser.parse_fromfile(path_xml)
@@ -74,6 +75,7 @@ class RMap:
                 tmp_host = host.address
 
             for serv in host.services:
+                # Collect nmap results into a list
                 services.append(f"{serv.service}:{serv.port}")
 
         self.services = services
@@ -85,5 +87,5 @@ class RMap:
                 self.nmap_ftp_enum(service[1])
             if service[0] == "http":
                 self.ffuf_dir_enum(service[1])
-            elif service[0] == "microsoft-ds":
+            elif service[0] == "microsoft-ds" or service[0] == "netbios-ssn":
                 self.nmap_smb_enum(service[1])

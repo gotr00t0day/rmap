@@ -141,6 +141,7 @@ venv.bak/
 nmap/
 ffuf/
 ftp/
+smb/
 
 # mypy
 .mypy_cache/
