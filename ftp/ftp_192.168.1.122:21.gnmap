@@ -1,1 +1,0 @@
-# Nmap 7.93 scan initiated Wed Nov 16 14:05:15 2022 as: /usr/bin/nmap --script ftp-* -p 21 -oA ftp/ftp_192.168.1.122:21 192.168.1.122
