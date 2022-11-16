@@ -1,18 +1,19 @@
-import nmap
-from colorama import Fore
-from utils import exec_cmd, exec_cmd_bash, hex_uuid, check_ping
+
+from enumpuke.main import nmap
+from enumpuke.banner import banner
+from enumpuke.utils import check_ping
 import argparse
 import os
-import xmltodict
-import json
-import logging
-import sys
-from libnmap.parser import NmapParser
+from configparser import ConfigParser
 
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-
+ffuf_wordlist = ""
 
 def init():
+    config_object = ConfigParser()
+    config_object.read("config.ini")
+
+    ffuf_wordlist = config_object["FFUF"]["wordlist"]
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--ip', type=str, required=True, help="IP Address")
@@ -23,86 +24,6 @@ def init():
     
     return args
 
-
-def nmap(host):
-
-    logging.info('Checking/Creating nmap output directory')
-    exec_cmd("mkdir -p nmap")
-
-    resultout = f"nmap_{hex_uuid()}"
-
-    cmdnmap = f"nmap -sC -sV -oA nmap/{resultout} {host}"
-
-    logging.info(f'Running...{cmdnmap}')
-    exec_cmd(cmdnmap)
-
-    xml_path = f"nmap/{resultout}.xml"
-
-    services_list = parse_nmap_file(xml_path)
-
-
-def ffuf_dir_enum(host, port):
-    exec_cmd("mkdir -p ffuf")
-    resultout = f"ffuf_{hex_uuid()}"
-    cmdffuf = f"ffuf -w /Users/c0deninja/SecLists/Discovery/Web-Content/directory-list-1.0.txt -u http://{host}:{port}/FUZZ -o ffuf/{resultout}.md -fc 302"
-    logging.info(f'[HTTP DETECTED] Running...{cmdffuf}')
-    print(exec_cmd(cmdffuf))
-
-def ffuf_dir_enum_wl(host, port):
-    args = init()
-    exec_cmd("mkdir -p ffuf")
-    resultout = f"ffuf_{hex_uuid()}"
-    cmdffuf = f"ffuf -w {args.wl} -u http://{host}:{port}/FUZZ -o ffuf/{resultout}.md -fc 302"
-    logging.info(f'[HTTP DETECTED] Running...{cmdffuf}')
-    print(exec_cmd(cmdffuf))
-
-
-def nmap_smb_enum(host, port):
-    exec_cmd("mkdir -p nmap")
-    resultout = f"smb_{hex_uuid()}"
-    cmdnmap = f"nmap --script=smb-enum-shares.nse,smb-enum-users.nse -p {port} -oA nmap/{resultout} {host}"
-
-    logging.info(f'[SMB DETECTED] Running...{cmdnmap}')
-    print(exec_cmd(cmdnmap))
-
-def parse_nmap_file(path_xml):
-    nmap_report = NmapParser.parse_fromfile(path_xml)
-
-    services = []
-
-    for host in nmap_report.hosts:
-        if len(host.hostnames):
-            tmp_host = host.hostnames.pop()
-        else:
-            tmp_host = host.address
-
-        for serv in host.services:
-            services.append(f"{serv.service}:{serv.port}")
-    
-    
-    for service in services:
-        service = service.split(":")
-        if service[0] == "http":
-            ffuf_dir_enum(host.address,service[1])
-        elif service[0] == "microsoft-ds":
-            nmap_smb_enum(host.address,service[1])
-
-
-    return services
-
-
-def banner():
-    print(Fore.RED + '''
-
-███████╗███╗░░██╗██╗░░░██╗███╗░░░███╗██████╗░██╗░░░██╗██╗░░██╗███████╗
-██╔════╝████╗░██║██║░░░██║████╗░████║██╔══██╗██║░░░██║██║░██╔╝██╔════╝
-█████╗░░██╔██╗██║██║░░░██║██╔████╔██║██████╔╝██║░░░██║█████═╝░█████╗░░
-██╔══╝░░██║╚████║██║░░░██║██║╚██╔╝██║██╔═══╝░██║░░░██║██╔═██╗░██╔══╝░░
-███████╗██║░╚███║╚██████╔╝██║░╚═╝░██║██║░░░░░╚██████╔╝██║░╚██╗███████╗
-╚══════╝╚═╝░░╚══╝░╚═════╝░╚═╝░░░░░╚═╝╚═╝░░░░░░╚═════╝░╚═╝░░╚═╝╚══════╝
-
-                        [Enumpuke 0.0.1]
-    ''' + Fore.RESET)
 
 def main():
     args = init()
