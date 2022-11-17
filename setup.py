@@ -6,7 +6,7 @@ setup(
     license = 'gpl-3.0',
     author = "syspuke",
     author_email='syspuke@pm.me',
-    version = '0.0.2',
+    version = '0.1.0',
     packages = ['rmap'],
     entry_points = {
         'console_scripts': [
