@@ -19,6 +19,7 @@ semaphore = multiprocessing.Semaphore(2)
 class RMap:
     def __init__(self, host, debug, processes_limit, nmap_all_ports, nmap_arguments, ffuf_wordlist, ffuf_outtype):
         self.host = host
+        self.os = ""
         self.ffuf_wordlist = ffuf_wordlist
         self.ffuf_outtype = ffuf_outtype
         self.services = []
@@ -91,10 +92,10 @@ class RMap:
         
 
         try:
-            r = requests.get(f"http://{self.host}:{port}", verify=False, timeout=10)
-        except requests.exceptions.ConnectionError:
+            r = requests.get(f"http://{self.host}:{port}", verify=False, timeout=5)
+        except:
             pass
-        print(r.json())
+        print(r.history)
 
     def nmap_telnet_enum(self, port):
         with semaphore:
@@ -160,6 +161,21 @@ class RMap:
         if self.debug:
             logging.debug(f'[LDAP ENDED] {ldapnmap}')              
 
+    def nmap_mysql_enum(self, port):
+        with semaphore:
+            sleep(1)
+
+        exec_cmd("mkdir -p mysql")
+        resultout = f"mysql_{self.host}:{port}"
+        mysqlnmap = f"nmap -sV --script mysql-audit,mysql-databases,mysql-dump-hashes,mysql-empty-password,mysql-enum,mysql-info,mysql-query,mysql-users,mysql-variables,mysql-vuln-cve2012-2122 -p {port} -oN mysql/{resultout} {self.host}"
+
+        print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [MYSQL DETECTED]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + mysqlnmap + Fore.RESET)
+        exec_cmd(mysqlnmap)
+
+        if self.debug:
+            logging.debug(f'[MYSQL ENDED] {mysqlnmap}')              
+
+
     def parse_nmap_file(self, path_xml):
         nmap_report = NmapParser.parse_fromfile(path_xml)
 
@@ -170,11 +186,14 @@ class RMap:
                 tmp_host = host.hostnames.pop()
             else:
                 tmp_host = host.address
+            
+            for osm in host.os.osmatches:
+                print(f"Found Match:{osm.name} ({osm.accuracy}%)")
 
             for serv in host.services:
-                print(serv)
                 # Collect nmap results into a list
                 services.append(f"{serv.service}:{serv.port}")
+
 
         self.services = services
 
@@ -196,6 +215,8 @@ class RMap:
                     pool.apply_async(self.nmap_irc_enum, [service[1]])
                 if service[0] == "ldap":
                     pool.apply_async(self.nmap_ldap_enum, [service[1]])
+                if service[0] == "mysql":
+                    pool.apply_async(self.nmap_mysql_enum, [service[1]])
                 if service[0] == "java-rmi":
                     pool.apply_async(self.nmap_javarmi_enum, [service[1]])
                 if int(service[1]) == 445:

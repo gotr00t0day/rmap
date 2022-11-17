@@ -34,3 +34,21 @@ options:
 ```
 $ sudo rmap --ip 10.10.10.10
 ```
+
+### Configuration
+
+**/usr/share/rmap/rmap.conf**
+```
+[rmap]
+# Maxium processes allowed to spawn
+processLimit = 3
+
+[nmap]
+allports = false
+arguments = -sC -sV -O
+
+[ffuf]
+wordlist = /usr/share/seclists/Discovery/Web-Content/big.txt
+# Available formats: json, ejson, html, md, csv, ecsv
+outtype = md
+```
