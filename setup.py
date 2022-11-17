@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name = 'rmap',
+    name = 'python-rmap',
     license = 'gpl-3.0',
     author = "syspuke",
     author_email='syspuke@pm.me',
