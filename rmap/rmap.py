@@ -7,6 +7,7 @@ from configparser import ConfigParser
 import argparse
 import subprocess
 import os
+from pathlib import Path
 import sys
 
 def is_tool(name):
@@ -54,8 +55,11 @@ def main():
         sys.exit()
     
     exec_cmd("mkdir -p /usr/share/rmap")
-    exec_cmd("curl https://gist.githubusercontent.com/syspuke/ff406d7b87ab653099b11960600b043e/raw/00a4b18391e11a26f939302965e6b640d8352a08/rmap.conf -o /usr/share/rmap/rmap.conf -s")
+    path = Path("/usr/share/rmap/rmap.conf")
 
+    if not path.is_file():
+        exec_cmd("curl https://gist.githubusercontent.com/syspuke/ff406d7b87ab653099b11960600b043e/raw/00a4b18391e11a26f939302965e6b640d8352a08/rmap.conf -o /usr/share/rmap/rmap.conf -s")
+    
     # Config parser
     config_object = ConfigParser()
 
