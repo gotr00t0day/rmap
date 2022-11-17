@@ -3,13 +3,19 @@
 
 ## Install
 
-
 ### PyPI
 
 ```
 $ pip3 install python-rmap
 ```
 
+### Git
+
+```
+$ git clone https://github.com/syspuke/rmap.git
+$ cd rmap
+$ pip3 install -e .
+```
 
 ## Usage
 
