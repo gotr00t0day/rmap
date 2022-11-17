@@ -144,6 +144,10 @@ ftp/
 smb/
 smtp/
 telnet/
+javarmi/
+irc/
+wordpress/
+rmap-report/
 
 # mypy
 .mypy_cache/
