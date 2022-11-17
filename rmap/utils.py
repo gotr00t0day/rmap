@@ -14,6 +14,7 @@ def check_ping(ip):
     
     return pingstatus
 
+
 def exec_cmd(cmd_str):
     return pexpect.run(cmd_str, encoding='utf-8', timeout=exec_timeout)
 

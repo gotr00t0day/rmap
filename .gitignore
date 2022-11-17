@@ -142,6 +142,8 @@ nmap/
 ffuf/
 ftp/
 smb/
+smtp/
+telnet/
 
 # mypy
 .mypy_cache/
