@@ -5,7 +5,9 @@ import os
 import xmltodict
 import json
 import logging
+import requests
 import sys
+import socket
 from time import sleep
 from random import randint
 from libnmap.parser import NmapParser
@@ -82,6 +84,18 @@ class RMap:
         if self.debug:
             logging.debug(f'[FTP ENDED] {cmdnmap}')
 
+    def wordpress_detect(self, port):
+        with semaphore:
+            sleep(1)
+        exec_cmd("mkdir -p wordpress")
+        
+
+        try:
+            r = requests.get(f"http://{self.host}:{port}", verify=False, timeout=10)
+        except requests.exceptions.ConnectionError:
+            pass
+        print(r.json())
+
     def nmap_telnet_enum(self, port):
         with semaphore:
             sleep(1)
@@ -106,6 +120,45 @@ class RMap:
         if self.debug:
             logging.debug(f'[SMTP ENDED] {smtpnmap}')
 
+    def nmap_irc_enum(self, port):
+        with semaphore:
+            sleep(1)
+        
+        exec_cmd("mkdir -p irc")
+        resultout = f"irc_{self.host}:{port}"
+        ircnmap = f"nmap -sV --script irc-botnet-channels,irc-info,irc-unrealircd-backdoor -p {port} -oN irc/{resultout} {self.host}"
+
+        print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [IRC DETECTED]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + ircnmap + Fore.RESET)
+        exec_cmd(ircnmap)
+        if self.debug:
+            logging.debug(f'[IRC ENDED] {ircnmap}')
+
+    def nmap_javarmi_enum(self, port):
+        with semaphore:
+            sleep(1)
+
+        exec_cmd("mkdir -p javarmi")        
+        resultout = f"javarmi_{self.host}:{port}"
+        javarminmap = f"nmap -Pn -sV --script rmi-dumpregistry -p {port} -oN javarmi/{resultout} {self.host}"
+
+        print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [Java RMI DETECTED]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + javarminmap + Fore.RESET)
+        exec_cmd(javarminmap)
+        if self.debug:
+            logging.debug(f'[Java RMI ENDED] {javarminmap}')
+
+    def nmap_ldap_enum(self, port):
+        with semaphore:
+            sleep(1)
+
+        exec_cmd("mkdir -p ldap")
+        resultout = f"ldap_{self.host}:{port}"
+        ldapnmap = f"nmap -n -sV --script \"ldap* and not brute\" -p {port} -oN ldap/{resultout} {self.host}"
+
+        print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [LDAP DETECTED]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + ldapnmap + Fore.RESET)
+        exec_cmd(ldapnmap)
+
+        if self.debug:
+            logging.debug(f'[LDAP ENDED] {ldapnmap}')              
 
     def parse_nmap_file(self, path_xml):
         nmap_report = NmapParser.parse_fromfile(path_xml)
@@ -119,6 +172,7 @@ class RMap:
                 tmp_host = host.address
 
             for serv in host.services:
+                print(serv)
                 # Collect nmap results into a list
                 services.append(f"{serv.service}:{serv.port}")
 
@@ -134,8 +188,16 @@ class RMap:
                     pool.apply_async(self.nmap_telnet_enum, [service[1]])
                 if service[0] == "http":
                     pool.apply_async(self.ffuf_dir_enum, [service[1]])
+                    sleep(3)
+                    pool.apply_async(self.wordpress_detect, [service[1]])
                 if service[0] == "smtp":
                     pool.apply_async(self.nmap_smtp_enum, [service[1]])
+                if service[0] == "irc":
+                    pool.apply_async(self.nmap_irc_enum, [service[1]])
+                if service[0] == "ldap":
+                    pool.apply_async(self.nmap_ldap_enum, [service[1]])
+                if service[0] == "java-rmi":
+                    pool.apply_async(self.nmap_javarmi_enum, [service[1]])
                 if int(service[1]) == 445:
                     pool.apply_async(self.nmap_smb_enum, [service[1]])
 

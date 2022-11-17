@@ -1,0 +1,12 @@
+# Nmap 7.93 scan initiated Wed Nov 16 22:21:40 2022 as: /usr/bin/nmap -sV --script irc-botnet-channels,irc-info,irc-unrealircd-backdoor -p 6667 -oN irc/irc_192.168.1.122:6667 192.168.1.122
+Nmap scan report for 192.168.1.122
+Host is up (0.00036s latency).
+
+PORT     STATE SERVICE VERSION
+6667/tcp open  irc     UnrealIRCd (Admin email admin@Metasploitable.LAN)
+| irc-botnet-channels: 
+|_  ERROR: Closing Link: [192.168.1.119] (Throttled: Reconnecting too fast) -Email admin@Metasploitable.LAN for more information.
+MAC Address: 00:0C:29:CF:00:10 (VMware)
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Wed Nov 16 22:21:40 2022 -- 1 IP address (1 host up) scanned in 0.83 seconds
