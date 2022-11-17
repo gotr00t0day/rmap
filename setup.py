@@ -2,6 +2,7 @@ from setuptools import setup
 
 setup(
     name = 'python-rmap',
+    description='Another automated enumeration tool',
     license = 'gpl-3.0',
     author = "syspuke",
     author_email='syspuke@pm.me',
@@ -11,4 +12,6 @@ setup(
         'console_scripts': [
             'rmap = rmap.rmap:main'
         ]
-    })
+    },
+    python_requires='>=3.6',
+    )

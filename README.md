@@ -1,20 +1,30 @@
 
 # RMap - Reconnaissance Mapper
 
+## Install
+
+
+### PyPI
+
+```
+$ pip3 install python-rmap
+```
+
+
 ## Usage
 
 ```
-$ python3 rmap.py -h 
-usage: rmap.py [-h] --ip IP [--cwd CWD]
+$ sudo rmap -h
+usage: rmap [-h] --ip IP [-d]
 
 options:
   -h, --help  show this help message and exit
   --ip IP     IP Address
-  --cwd CWD   Working Directory
+  -d          Debug output
 ```
 
 ```
-$ python3 rmap.py --ip 192.168.1.122
+$ sudo rmap --ip 10.10.10.10
 
 ⣿⣿⣿⡉⢀⣾⣿⡟⣩⣭⣭⡈⠙⢿⣿⣿⣿⣿⣿⡿⣻⣿⣿⣿⣿⣿⣿⣿⡇⠄
 ⣿⣿⡗⠄⣼⣿⣿⢸⡿⠉⠉⢻⡆⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⢠⠄
