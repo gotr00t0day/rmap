@@ -2,7 +2,7 @@ import pexpect
 import uuid
 import os
 
-exec_timeout = 86400 # 24 hours
+exec_timeout = 600 # 24 hours
 
 def check_ping(ip):
     response = os.system("ping -c 1 " + ip + " > /dev/null")
