@@ -22,4 +22,4 @@
 
 __version__ = '0.2.3'
 __author__ = 'syspuke'
-__licence__ = 'MIT'
+__licence__ = 'gpl-3.0'
