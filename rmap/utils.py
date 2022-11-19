@@ -1,8 +1,14 @@
 import pexpect
 import uuid
 import os
+from colorama import Fore
 
 exec_timeout = 600 # 24 hours
+
+
+def rmap_print_cmd(proto, port, cmd):
+    print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [{proto} DETECTED]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + cmd + Fore.RESET)
+
 
 def check_ping(ip):
     response = os.system("ping -c 1 " + ip + " > /dev/null")

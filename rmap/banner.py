@@ -59,5 +59,5 @@ def banner():
     art.append(art2)
     art.append(art3)
     print(Fore.RED + f'''{random.choice(art)}
-         [RMap 0.1.1]    
+         [RMap 0.2.2]    
     ''' + Fore.RESET)
