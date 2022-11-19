@@ -1,4 +1,4 @@
-from rmap.core import RMap
+from rmap.scan import RMap
 from libnmap.parser import NmapParser
 import multiprocessing
 
