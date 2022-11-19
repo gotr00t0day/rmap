@@ -1,5 +1,6 @@
 from rmap.utils import exec_cmd, exec_cmd_bash, rmap_print_cmd, rmap_print_msg, get_ping_ttl
 from colorama import Fore
+from pathlib import Path
 from time import sleep
 import logging
 import multiprocessing
@@ -10,27 +11,29 @@ semaphore = multiprocessing.Semaphore(2)
 outdir = "rmap-report"
 
 class RMap:
-    def __init__(self, host, debug, processes_limit, nmap_all_ports, pre_os_check, nmap_arguments, nmap_vulnscan, ffuf_wordlist, ffuf_outtype):
+    def __init__(self, host, debug, processes_limit, nmap_all_ports, pre_os_check, nmap_arguments, vulnscan, ffuf_wordlist, ffuf_outtype, scan_timeout):
         self.host = host
         self.ffuf_wordlist = ffuf_wordlist
         self.ffuf_outtype = ffuf_outtype
         self.nmap_all_ports = nmap_all_ports
         self.nmap_arguments = nmap_arguments
-        self.nmap_vulnscan = nmap_vulnscan
+        self.vulnscan = vulnscan
         self.debug = debug
         self.processes_limit = processes_limit
         self.pre_os_check = pre_os_check
+        self.scan_timeout = scan_timeout
 
         self.os_detected = self.os_detect()
             
         if self.os_detected == "Unknown":
             rmap_print_msg("OS DETECTION", "FAILED", "Couldn't detect the target OS.")
 
-        exec_cmd(f"mkdir -p {outdir}")
-        self.nmap()
 
-        if self.pre_os_check:
+        if self.vulnscan:
             self.nmap_vulnscan()
+        else:
+            exec_cmd(f"mkdir -p {outdir}")
+            self.nmap()
 
     def os_detect(self):
 
@@ -88,16 +91,16 @@ class RMap:
 
     def nmap_vulnscan(self):
 
+        exec_cmd(f"mkdir -p {outdir}/vulnscan")
         path = Path("/usr/share/nmap/scripts/vulscan")
         if not path.is_dir():
             vulscancmd = "git clone https://github.com/scipag/vulscan.git /usr/share/nmap/scripts/vulscan"
             rmap_print_msg("Nmap Vulnerability Scan", "Nmap Vulscan Install", vulscancmd)
             exec_cmd_bash(f"{vulscancmd} > /dev/null 2>&1")
 
-        exec_cmd(f"mkdir -p {outdir}/vulnscan")
-        resultout = f"vulnscan_{self.host}"
-        nmapcmd = f'nmap -sV --script=vulscan/vulscan.nse -oA {outdir}/vulnscan/{resultout} {self.host}'
-        rmap_print_msg("Nmap Vulnerability Scan", "EXEC", nmapcmd)
+        resultout2 = f"vulscan_{self.host}"
+        nmapcmd = f'nmap -sV --script=vulscan/vulscan.nse -oN {outdir}/vulnscan/{resultout2} {self.host}'
+        rmap_print_msg("Nmap Vulscan Vulnerability Scan", "EXEC", nmapcmd)
         exec_cmd(nmapcmd)
 
     def nmap(self):

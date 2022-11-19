@@ -7,6 +7,13 @@ import re
 
 exec_timeout = 600
 
+def rmap_print_cmd(proto, port, cmd):
+    print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [{proto} DETECTED]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + cmd + Fore.RESET)
+
+def rmap_print_msg(label, op, msg):
+    print(Fore.RED + "[*]" + Fore.GREEN + f' [{label}]' + Fore.MAGENTA + f' [{op}] ' + Fore.BLUE + msg + Fore.RESET)
+
+
 def get_ping_ttl(host):
 
     p = subprocess.Popen(["ping", "-c 1", host], stdout=subprocess.PIPE)
@@ -19,13 +26,6 @@ def get_ping_ttl(host):
         result_ttl = re.findall(r'\d+', ttl_group)
 
         return int(result_ttl[0])
-
-
-def rmap_print_cmd(proto, port, cmd):
-    print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [{proto} DETECTED]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + cmd + Fore.RESET)
-
-def rmap_print_msg(label, op, msg):
-    print(Fore.RED + "[*]" + Fore.GREEN + f' [{label}]' + Fore.MAGENTA + f' [{op}] ' + Fore.BLUE + msg + Fore.RESET)
 
 
 def check_ping(ip):
