@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from rmap.rmap import RMap
+from rmap.nmap import NmapHandler
 from rmap.banner import banner
 from rmap.utils import check_ping, exec_cmd
 from configparser import ConfigParser
@@ -76,7 +76,7 @@ def main():
     if nmap_all_ports == "false":
         nmap_all_ports = False
 
-    RMap(args.ip, args.d, int(processes_limit), nmap_all_ports, nmap_arguments, ffuf_wordlist, ffuf_outtype)
+    NmapHandler(args.ip, args.d, int(processes_limit), nmap_all_ports, nmap_arguments, ffuf_wordlist, ffuf_outtype)
 
 if __name__ == "__main__":
     main()

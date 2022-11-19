@@ -1,4 +1,3 @@
-from rmap.nmap import parse_nmap_file, analyse_nmap
 from rmap.utils import exec_cmd, exec_cmd_bash, rmap_print_cmd
 from colorama import Fore
 from time import sleep
@@ -41,8 +40,8 @@ class RMap:
 
         xml_path = f"{outdir}/nmap/{resultout}.xml"
 
-        services = parse_nmap_file(xml_path)
-        analyse_nmap(self, services, self.processes_limit)
+        services = self.parse_nmap_file(xml_path)
+        self.analyse_nmap(self, services, self.processes_limit)
 
 
     def ffuf_dir_enum(self, port):
