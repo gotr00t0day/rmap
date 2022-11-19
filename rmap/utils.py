@@ -7,7 +7,7 @@ exec_timeout = 600 # 24 hours
 
 
 def rmap_print_cmd(proto, port, cmd):
-    print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [{proto} DETECTED]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + {cmd} + Fore.RESET)
+    print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [{proto} DETECTED]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + cmd + Fore.RESET)
 
 
 def check_ping(ip):
