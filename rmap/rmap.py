@@ -58,7 +58,7 @@ def main():
     path = Path("/usr/share/rmap/rmap.conf")
 
     if not path.is_file():
-        exec_cmd("curl https://gist.githubusercontent.com/syspuke/ff406d7b87ab653099b11960600b043e/raw/00a4b18391e11a26f939302965e6b640d8352a08/rmap.conf -o /usr/share/rmap/rmap.conf -s")
+        exec_cmd("curl https://raw.githubusercontent.com/syspuke/rmap/main/rmap.conf -o /usr/share/rmap/rmap.conf -s")
     
     # Config parser
     config_object = ConfigParser()
