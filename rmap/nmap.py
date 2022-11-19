@@ -18,7 +18,6 @@ class NmapHandler(RMap):
                 
         return services
 
-
     def analyse_nmap(self, services):
         with multiprocessing.Pool(processes=int(self.processes_limit)) as pool:
             for service in services:
