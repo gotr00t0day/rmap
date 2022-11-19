@@ -22,6 +22,9 @@ class RMap:
 
         exec_cmd(f"mkdir -p {outdir}")
         self.nmap()
+    
+    def get_rmap(self):
+        return super(RMap, self)
         
     def nmap(self):
         exec_cmd(f"mkdir -p {outdir}/nmap")

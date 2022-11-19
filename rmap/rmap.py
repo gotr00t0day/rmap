@@ -4,12 +4,14 @@ from rmap.main import RMap
 from rmap.banner import banner
 from rmap.utils import check_ping, exec_cmd
 from configparser import ConfigParser
+import urllib.request
 import argparse
 import subprocess
 import os
 from pathlib import Path
 import sys
 import errno
+import logging
 
 def is_tool(name):
     try:
@@ -48,7 +50,6 @@ def init():
 
 def main():
     args = init()
-    cwd = os.getcwd()
     banner()
     
     if not check_ping(args.ip):
@@ -59,7 +60,7 @@ def main():
     path = Path("/usr/share/rmap/rmap.conf")
 
     if not path.is_file():
-        exec_cmd("curl https://raw.githubusercontent.com/syspuke/rmap/main/rmap.conf -o /usr/share/rmap/rmap.conf -s")
+        urllib.request.urlretrieve("https://raw.githubusercontent.com/syspuke/rmap/main/rmap.conf", "/usr/share/rmap/rmap.conf")
     
     # Config parser
     config_object = ConfigParser()

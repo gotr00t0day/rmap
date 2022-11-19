@@ -15,7 +15,7 @@ def parse_nmap_file(path_xml):
 
 
 def analyse_nmap(rmapobj, services, processes_limit):
-    rmap = rmapobj()
+    rmap = rmapobj.get_rmap()
     with multiprocessing.Pool(processes=int(processes_limit)) as pool:
         for service in services:
             service = service.split(":")
