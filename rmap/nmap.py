@@ -4,8 +4,8 @@ import multiprocessing
 
 
 class NmapHandler(RMap):
-    def __init__(self, host, debug, processes_limit, nmap_all_ports, nmap_arguments, ffuf_wordlist, ffuf_outtype):
-        super().__init__(host, debug, processes_limit, nmap_all_ports, nmap_arguments, ffuf_wordlist, ffuf_outtype)
+    def __init__(self, host, debug, processes_limit, nmap_all_ports, pre_os_check, nmap_arguments, nmap_vulnscan, ffuf_wordlist, ffuf_outtype):
+        super().__init__(host, debug, processes_limit, nmap_all_ports, pre_os_check, nmap_arguments, nmap_vulnscan, ffuf_wordlist, ffuf_outtype)
         
     def parse_nmap_file(self, path_xml):
         nmap_report = NmapParser.parse_fromfile(path_xml)

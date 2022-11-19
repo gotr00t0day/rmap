@@ -12,7 +12,7 @@ def get_ping_ttl(host):
     p = subprocess.Popen(["ping", "-c 1", host], stdout=subprocess.PIPE)
     res = p.communicate()[0]
     if p.returncode > 0:
-        return None
+        return 0
     else:
         pattern = re.compile(r'[t,T][t,T][l,L]=\d*')
         ttl_group = pattern.search(str(res)).group()

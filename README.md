@@ -44,8 +44,10 @@ $ sudo rmap --ip 10.10.10.10
 processLimit = 3
 
 [nmap]
+# Enable nmap OS check; otherwise, use only ICMP TTL for OS detection
+OSCheck = true
 allports = false
-arguments = -sC -sV -O
+arguments = -sC -sV
 
 [ffuf]
 wordlist = /usr/share/seclists/Discovery/Web-Content/big.txt
