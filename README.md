@@ -42,6 +42,8 @@ $ sudo rmap --ip 10.10.10.10
 [rmap]
 # Max processes allowed to spawn
 processLimit = 3
+# 600 seconds = 10 minutes
+processTimeout = 600
 
 [nmap]
 # Enable nmap OS check; otherwise, use only ICMP TTL for OS detection
