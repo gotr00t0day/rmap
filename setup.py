@@ -1,8 +1,5 @@
 from setuptools import setup
 
-with open('requirements.txt') as f:
-    required = f.read().splitlines()
-
 setup(
     name = 'python-rmap',
     description='Automated enumeration for red teamers',
@@ -18,5 +15,4 @@ setup(
         ]
     },
     python_requires='>=3.6',
-    install_requires=required,
     )
