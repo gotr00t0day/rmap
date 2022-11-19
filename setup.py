@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
 
 setup(
     name = 'python-rmap',
-    description='Another automated enumeration tool',
+    description='Automated enumeration for red teamers',
     license = 'gpl-3.0',
     author = "syspuke",
     author_email='syspuke@pm.me',
