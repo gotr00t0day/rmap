@@ -6,6 +6,7 @@ setup(
     license = 'gpl-3.0',
     author = "syspuke",
     author_email='syspuke@pm.me',
+    url='https://github.com/syspuke/rmap',
     version = '0.1.1',
     packages = ['rmap'],
     entry_points = {

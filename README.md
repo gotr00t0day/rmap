@@ -11,7 +11,7 @@
 $ pip3 install python-rmap
 ```
 
-### Git
+### Git 
 
 ```
 $ git clone https://github.com/syspuke/rmap.git
@@ -40,7 +40,7 @@ $ sudo rmap --ip 10.10.10.10
 **/usr/share/rmap/rmap.conf**
 ```
 [rmap]
-# Maxium processes allowed to spawn
+# Max processes allowed to spawn
 processLimit = 3
 
 [nmap]
