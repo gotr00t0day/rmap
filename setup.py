@@ -7,7 +7,7 @@ setup(
     author = "syspuke",
     author_email='syspuke@pm.me',
     url='https://github.com/syspuke/rmap',
-    version = '0.2.0',
+    version = '0.2.1',
     packages = ['rmap'],
     entry_points = {
         'console_scripts': [
