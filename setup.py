@@ -14,7 +14,7 @@ setup(
     packages = ['rmap'],
     entry_points = {
         'console_scripts': [
-            'rmap = rmap.rmap:main'
+            'rmap = rmap.main:main'
         ]
     },
     python_requires='>=3.6',
