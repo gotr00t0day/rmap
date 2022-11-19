@@ -19,7 +19,10 @@ class RMap:
         self.debug = debug
         self.processes_limit = processes_limit
 
-        self.os_detected
+        self.os_detected = self.os_detect()
+
+        if self.os_detected == "Unknown":
+            rmap_print_msg("OS DETECTION", "FAILED", "Couldn't detect the target OS.")
 
         exec_cmd(f"mkdir -p {outdir}")
         self.nmap()
@@ -29,17 +32,30 @@ class RMap:
 
         # Linux
         if ttl_result == 64:
-            self.os_detected = "Linux"
+            rmap_print_msg("OS DETECTION", "PING TTL MATCH", "Linux")
+            return "Linux"
         elif ttl_result == 128:
-            self.os_detected = "Windows"
+            rmap_print_msg("OS DETECTION", "PING TTL MATCH", "Windows")
+            return "Windows"
         else:
-            rmap_print_msg("OS DETECTION", "STATUS", "Ping TTL didn't match Linux or Windows. Running Nmap OS detection...")
+            rmap_print_msg("OS DETECTION", "STATUS", "PING TTL didn't match Linux or Windows. Running Nmap OS detection...")
+            nmapresult = self.nmap_os_detect()
+            if nmapresult != "":
+                rmap_print_msg("OS DETECTION", "NMAP OS MATCH", nmapresult)
+                return nmapresult
+            else:
+                return "Unknown"
+        
+        return "Unknown"
     
 
     def nmap_os_detect(self):
-        nmapcmd = f'''nmap --top-ports 20 -O -oG - {self.host} | awk \'{for (I=1;I<NF;I++) if ($I == \"OS:\") printf $(I+1) \" \" $(I+2)}\' '''
+        awkcmd = ''' awk '{for (I=1;I<NF;I++) if ($I == "OS:") printf $(I+1) " " $(I+2)}' '''
+        nmapcmd = f'nmap --top-ports 20 -O -oG - {hostadd}'
         rmap_print_msg("OS DETECTION", "EXEC", nmapcmd)
-        nmapresult = exec_cmd_bash(f"{nmapcmd}")
+        osresult = exec_cmd_bash(f"{nmapcmd} | {awkcmd}")
+
+        return osresult[0]
         
     def nmap(self):
         exec_cmd(f"mkdir -p {outdir}/nmap")
