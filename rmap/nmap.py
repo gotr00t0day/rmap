@@ -19,8 +19,8 @@ class NmapHandler(RMap):
         return services
 
 
-    def analyse_nmap(self, services, processes_limit):
-        with multiprocessing.Pool(processes=int(processes_limit)) as pool:
+    def analyse_nmap(self, services):
+        with multiprocessing.Pool(processes=int(self.processes_limit)) as pool:
             for service in services:
                 service = service.split(":")
                 if service[0] == "ftp":

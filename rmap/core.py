@@ -41,7 +41,7 @@ class RMap:
         xml_path = f"{outdir}/nmap/{resultout}.xml"
 
         services = self.parse_nmap_file(xml_path)
-        self.analyse_nmap(self, services, self.processes_limit)
+        self.analyse_nmap(self, services)
 
 
     def ffuf_dir_enum(self, port):
