@@ -23,16 +23,20 @@ $ pip3 install -e .
 
 ```
 $ sudo rmap -h
-usage: rmap [-h] --ip IP [-d]
+usage: rmap [-h] [--vuln] [-d] [-v] ip
+
+positional arguments:
+  ip             Target IP Address
 
 options:
-  -h, --help  show this help message and exit
-  --ip IP     IP Address
-  -d          Debug output
+  -h, --help     show this help message and exit
+  --vuln         Scan host for vulnerabilities
+  -d, --debug    Debug output
+  -v, --version  Show version                           
 ```
 
 ```
-$ sudo rmap --ip 10.10.10.10
+$ sudo rmap 10.10.10.10
 ```
 
 ### Configuration
@@ -42,8 +46,6 @@ $ sudo rmap --ip 10.10.10.10
 [rmap]
 # Max processes allowed to spawn
 processLimit = 3
-# 600 seconds = 10 minutes
-processTimeout = 600
 
 [nmap]
 # Enable nmap OS check; otherwise, use only ICMP TTL for OS detection

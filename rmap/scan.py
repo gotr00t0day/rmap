@@ -4,6 +4,7 @@ from pathlib import Path
 from time import sleep
 import logging
 import multiprocessing
+import pexpect
 
 logging.basicConfig(level=logging.DEBUG)
 semaphore = multiprocessing.Semaphore(2)
@@ -11,7 +12,7 @@ semaphore = multiprocessing.Semaphore(2)
 outdir = "rmap-report"
 
 class RMap:
-    def __init__(self, host, debug, processes_limit, nmap_all_ports, pre_os_check, nmap_arguments, vulnscan, ffuf_wordlist, ffuf_outtype, scan_timeout):
+    def __init__(self, host, debug, processes_limit, nmap_all_ports, pre_os_check, nmap_arguments, vulnscan, ffuf_wordlist, ffuf_outtype):
         self.host = host
         self.ffuf_wordlist = ffuf_wordlist
         self.ffuf_outtype = ffuf_outtype
@@ -21,7 +22,6 @@ class RMap:
         self.debug = debug
         self.processes_limit = processes_limit
         self.pre_os_check = pre_os_check
-        self.scan_timeout = scan_timeout
 
         self.os_detected = self.os_detect()
             
@@ -356,18 +356,3 @@ class RMap:
 
         rmap_print_cmd("POP3", port, pop3nmap)
         exec_cmd(pop3nmap)
-
-    def jdwp_enum(self, port):
-        with semaphore:
-            sleep(1)
-
-        exec_cmd(f"mkdir -p {outdir}/jdwp")
-        resultout = f"jdwp_{self.host}:{port}"
-        msfcmd = f"msfconsole -n -q -x \"use exploit/multi/misc/java_jdwp_debugger;set RHOSTS {self.host};set RPORT {port};run;exit\""
-
-        rmap_print_cmd("JDWP", port, msfcmd)
-        exec_cmd_bash(f"{msfcmd} > {outdir}/jdwp/{resultout}")
-
-        if self.debug:
-            logging.debug(f'[JDWP ENDED] {msfcmd}')        
-

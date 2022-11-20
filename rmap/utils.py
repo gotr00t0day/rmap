@@ -13,6 +13,9 @@ def rmap_print_cmd(proto, port, cmd):
 def rmap_print_msg(label, op, msg):
     print(Fore.RED + "[*]" + Fore.GREEN + f' [{label}]' + Fore.MAGENTA + f' [{op}] ' + Fore.BLUE + msg + Fore.RESET)
 
+def rmap_print_timeout(cmd):
+    print(Fore.RED + "[*]" + Fore.RED + f' [TIMEOUT]' + Fore.MAGENTA + f' [EXIT] ' + Fore.RED + cmd + Fore.RESET)
+
 
 def get_ping_ttl(host):
 

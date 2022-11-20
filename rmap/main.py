@@ -73,7 +73,6 @@ def main():
         config_object.read("/usr/share/rmap/rmap.conf")
 
         processes_limit = config_object["rmap"]["processLimit"]
-        scan_timeout = int(config_object["rmap"]["processTimeout"])
         pre_os_check = config_object["nmap"]["OSCheck"]
         nmap_all_ports = config_object["nmap"]["allports"]
         nmap_arguments = config_object["nmap"]["arguments"]
@@ -91,14 +90,13 @@ def main():
     except (IOError, KeyError) as err:
         logging.error(f"Config error: {err}. Using default values.")
         processes_limit = 2
-        scan_timeout = 300
         pre_os_check = True
         nmap_all_ports = False
         nmap_arguments = "-sC -sV"
         ffuf_wordlist = "/usr/share/seclists/Discovery/Web-Content/big.txt"
         ffuf_outtype = "md"
     
-    NmapHandler(args.ip, args.debug, int(processes_limit), nmap_all_ports, pre_os_check, nmap_arguments, args.vuln, ffuf_wordlist, ffuf_outtype, scan_timeout)
+    NmapHandler(args.ip, args.debug, int(processes_limit), nmap_all_ports, pre_os_check, nmap_arguments, args.vuln, ffuf_wordlist, ffuf_outtype)
 
 if __name__ == "__main__":
     main()
