@@ -1,4 +1,5 @@
 from colorama import Fore
+from rmap import __version__
 import random
 
 art = []
@@ -59,5 +60,5 @@ def banner():
     art.append(art2)
     art.append(art3)
     print(Fore.RED + f'''{random.choice(art)}
-         [RMap 0.2.2]    
+         [RMap {__version__}]    
     ''' + Fore.RESET)

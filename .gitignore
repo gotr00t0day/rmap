@@ -149,6 +149,8 @@ irc/
 wordpress/
 rmap-report/
 
+testing.py
+
 # mypy
 .mypy_cache/
 .dmypy.json

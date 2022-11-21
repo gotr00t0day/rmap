@@ -1,4 +1,5 @@
 from setuptools import setup
+from rmap import __version__
 
 setup(
     name = 'python-rmap',
@@ -7,7 +8,7 @@ setup(
     author = "syspuke",
     author_email='syspuke@pm.me',
     url='https://github.com/syspuke/rmap',
-    version = '0.2.2',
+    version = __version__,
     packages = ['rmap'],
     entry_points = {
         'console_scripts': [

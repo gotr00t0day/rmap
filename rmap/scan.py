@@ -1,8 +1,10 @@
-from rmap.utils import exec_cmd, exec_cmd_bash, rmap_print_cmd
+from rmap.utils import exec_cmd, exec_cmd_bash, rmap_print_cmd, rmap_print_msg, get_ping_ttl
 from colorama import Fore
+from pathlib import Path
 from time import sleep
 import logging
 import multiprocessing
+import pexpect
 
 logging.basicConfig(level=logging.DEBUG)
 semaphore = multiprocessing.Semaphore(2)
@@ -10,18 +12,97 @@ semaphore = multiprocessing.Semaphore(2)
 outdir = "rmap-report"
 
 class RMap:
-    def __init__(self, host, debug, processes_limit, nmap_all_ports, nmap_arguments, ffuf_wordlist, ffuf_outtype):
+    def __init__(self, host, debug, processes_limit, nmap_all_ports, pre_os_check, nmap_arguments, vulnscan, ffuf_wordlist, ffuf_outtype):
         self.host = host
         self.ffuf_wordlist = ffuf_wordlist
         self.ffuf_outtype = ffuf_outtype
         self.nmap_all_ports = nmap_all_ports
         self.nmap_arguments = nmap_arguments
+        self.vulnscan = vulnscan
         self.debug = debug
         self.processes_limit = processes_limit
+        self.pre_os_check = pre_os_check
 
-        exec_cmd(f"mkdir -p {outdir}")
-        self.nmap()
+        self.os_detected = self.os_detect()
+            
+        if self.os_detected == "Unknown":
+            rmap_print_msg("OS DETECTION", "FAILED", "Couldn't detect the target OS.")
+
+
+        if self.vulnscan:
+            self.nmap_vulnscan()
+        else:
+            exec_cmd(f"mkdir -p {outdir}")
+            self.nmap()
+
+    def os_detect(self):
+
+        suspected_os = "Unknown"
+        ttl_result = get_ping_ttl(self.host)
+
+        # Linux
+        if ttl_result == 64:
+            suspected_os = "Linux"
         
+        # Windows sometimes varies in this range
+        if ttl_result > 120 and ttl_result < 130:
+            suspected_os = "Windows"
+        
+        if self.pre_os_check:
+            if suspected_os != "Unknown":
+                rmap_print_msg("OS DETECTION", "ICMP TTL", f"Suspected OS: {suspected_os}. Running Nmap OS detection...")
+                nmapresult = self.nmap_os_detect()
+                if nmapresult != "Unknown":
+                    rmap_print_msg("OS DETECTION", "NMAP OS MATCH", nmapresult)
+                    return nmapresult
+                else:
+                    return suspected_os
+            else:
+                return "Unknown"
+        else:
+            rmap_print_msg("OS DETECTION", "ICMP TTL", f"Suspected OS: {suspected_os}.")
+            return suspected_os
+    
+    def nmap_os_detect(self):
+        awkcmd = ''' awk '{for (I=1;I<NF;I++) if ($I == "CPE:") printf $(I+1)}' '''
+        nmapcmd = f'nmap --top-ports 10 -sV -T4 -O {self.host}'
+        rmap_print_msg("OS DETECTION", "EXEC", nmapcmd)
+        osresult = exec_cmd_bash(f"{nmapcmd} | {awkcmd} | tr -d \;")
+
+        if osresult[1] != 0:
+            if self.debug:
+                logging.debug(f'[OS DETECTION NMAP FAILED] [RESULT] {osresult}')
+            return "Unknown"
+        
+        if osresult[0] == "":
+            if self.debug:
+                logging.debug(f'[OS DETECTION NMAP FAILED] [RESULT] {osresult}')
+            return "Unknown"
+
+        if self.debug:
+            logging.debug(f'[OS DETECTION NMAP ENDED] [RESULT] {osresult}')
+
+        if "windows" in osresult[0]:
+            return "Windows"
+        elif "linux" in osresult[0]:
+            return "Linux"
+
+        return "Unknown"
+
+    def nmap_vulnscan(self):
+
+        exec_cmd(f"mkdir -p {outdir}/vulnscan")
+        path = Path("/usr/share/nmap/scripts/vulscan")
+        if not path.is_dir():
+            vulscancmd = "git clone https://github.com/scipag/vulscan.git /usr/share/nmap/scripts/vulscan"
+            rmap_print_msg("Nmap Vulnerability Scan", "Nmap Vulscan Install", vulscancmd)
+            exec_cmd_bash(f"{vulscancmd} > /dev/null 2>&1")
+
+        resultout2 = f"vulscan_{self.host}"
+        nmapcmd = f'nmap -sV --script=vulscan/vulscan.nse -oN {outdir}/vulnscan/{resultout2} {self.host}'
+        rmap_print_msg("Nmap Vulscan Vulnerability Scan", "EXEC", nmapcmd)
+        exec_cmd(nmapcmd)
+
     def nmap(self):
         exec_cmd(f"mkdir -p {outdir}/nmap")
 
@@ -275,7 +356,3 @@ class RMap:
 
         rmap_print_cmd("POP3", port, pop3nmap)
         exec_cmd(pop3nmap)
-
-        if self.debug:
-            logging.debug(f'[POP3 ENDED] {pop3nmap}')        
-

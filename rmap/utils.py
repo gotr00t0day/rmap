@@ -2,12 +2,33 @@ import pexpect
 import uuid
 import os
 from colorama import Fore
+import subprocess
+import re
 
-exec_timeout = 600 # 24 hours
-
+exec_timeout = 600
 
 def rmap_print_cmd(proto, port, cmd):
     print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [{proto} DETECTED]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + cmd + Fore.RESET)
+
+def rmap_print_msg(label, op, msg):
+    print(Fore.RED + "[*]" + Fore.GREEN + f' [{label}]' + Fore.MAGENTA + f' [{op}] ' + Fore.BLUE + msg + Fore.RESET)
+
+def rmap_print_timeout(cmd):
+    print(Fore.RED + "[*]" + Fore.RED + f' [TIMEOUT]' + Fore.MAGENTA + f' [EXIT] ' + Fore.RED + cmd + Fore.RESET)
+
+
+def get_ping_ttl(host):
+
+    p = subprocess.Popen(["ping", "-c 1", host], stdout=subprocess.PIPE)
+    res = p.communicate()[0]
+    if p.returncode > 0:
+        return 0
+    else:
+        pattern = re.compile(r'[t,T][t,T][l,L]=\d*')
+        ttl_group = pattern.search(str(res)).group()
+        result_ttl = re.findall(r'\d+', ttl_group)
+
+        return int(result_ttl[0])
 
 
 def check_ping(ip):

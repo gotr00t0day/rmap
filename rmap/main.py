@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from rmap import __version__
 from rmap.nmap import NmapHandler
 from rmap.banner import banner
 from rmap.utils import check_ping, exec_cmd
@@ -41,8 +42,11 @@ if not is_tool("ffuf"):
 def init():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--ip', type=str, required=True, help="IP Address")
-    parser.add_argument('-d', default=False, help="Debug output", action="store_true")
+    #parser.add_argument('', '--ip', type=str, required=True, help="IP Address")
+    parser.add_argument('ip', help="Target IP Address", type=str)
+    parser.add_argument('--vuln', default=False, help="Scan host for vulnerabilities", action="store_true")
+    parser.add_argument('-d', '--debug', default=False, help="Debug output", action="store_true")
+    parser.add_argument('-v', '--version', help="Show version", action='version', version=__version__)
 
     args = parser.parse_args()
     
@@ -60,23 +64,39 @@ def main():
     path = Path("/usr/share/rmap/rmap.conf")
 
     if not path.is_file():
-        urllib.request.urlretrieve("https://raw.githubusercontent.com/syspuke/rmap/main/rmap.conf", "/usr/share/rmap/rmap.conf")
+        urllib.request.urlretrieve("https://raw.githubusercontent.com/syspuke/rmap/dev/rmap.conf", "/usr/share/rmap/rmap.conf")
     
-    # Config parser
-    config_object = ConfigParser()
+    try:
+        # Config parser
+        config_object = ConfigParser()
 
-    config_object.read("/usr/share/rmap/rmap.conf")
+        config_object.read("/usr/share/rmap/rmap.conf")
 
-    processes_limit = config_object["rmap"]["processLimit"]
-    nmap_all_ports = config_object["nmap"]["allports"]
-    nmap_arguments = config_object["nmap"]["arguments"]
-    ffuf_wordlist = config_object["ffuf"]["wordlist"]
-    ffuf_outtype = config_object["ffuf"]["outtype"]
+        processes_limit = config_object["rmap"]["processLimit"]
+        pre_os_check = config_object["nmap"]["OSCheck"]
+        nmap_all_ports = config_object["nmap"]["allports"]
+        nmap_arguments = config_object["nmap"]["arguments"]
+        ffuf_wordlist = config_object["ffuf"]["wordlist"]
+        ffuf_outtype = config_object["ffuf"]["outtype"]
 
-    if nmap_all_ports == "false":
+        if nmap_all_ports == "false":
+            nmap_all_ports = False
+        else:
+            nmap_all_ports = True
+        if pre_os_check == "false":
+            pre_os_check = False
+        else:
+            pre_os_check = True
+    except (IOError, KeyError) as err:
+        logging.error(f"Config error: {err}. Using default values.")
+        processes_limit = 2
+        pre_os_check = True
         nmap_all_ports = False
-
-    NmapHandler(args.ip, args.d, int(processes_limit), nmap_all_ports, nmap_arguments, ffuf_wordlist, ffuf_outtype)
+        nmap_arguments = "-sC -sV"
+        ffuf_wordlist = "/usr/share/seclists/Discovery/Web-Content/big.txt"
+        ffuf_outtype = "md"
+    
+    NmapHandler(args.ip, args.debug, int(processes_limit), nmap_all_ports, pre_os_check, nmap_arguments, args.vuln, ffuf_wordlist, ffuf_outtype)
 
 if __name__ == "__main__":
     main()
