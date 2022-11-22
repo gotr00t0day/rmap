@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rmap"
-version = "0.2.4"
+version = "0.2.5"
 description = "Automated enumeration for red teamers"
 authors = ["syspuke <syspuke@pm.me>"]
 license = "gpl-3.0"
