@@ -148,6 +148,9 @@ javarmi/
 irc/
 wordpress/
 rmap-report/
+mysql/
+ajp13/
+
 
 testing.py
 

@@ -17,6 +17,16 @@ def rmap_print_timeout(cmd):
     print(Fore.RED + "[*]" + Fore.RED + f' [TIMEOUT]' + Fore.MAGENTA + f' [EXIT] ' + Fore.RED + cmd + Fore.RESET)
 
 
+def is_tool(name):
+    try:
+        devnull = open(os.devnull)
+        subprocess.Popen([name], stdout=devnull, stderr=devnull).communicate()
+    except OSError as e:
+        if e.errno == errno.ENOENT:
+            return False
+    return True
+
+
 def get_ping_ttl(host):
 
     p = subprocess.Popen(["ping", "-c 1", host], stdout=subprocess.PIPE)
