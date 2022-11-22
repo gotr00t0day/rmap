@@ -108,9 +108,9 @@ class RMap:
         resultout2 = f"smbclient_shares_{self.host}:{port}"
         smbclientcmd = f'''smbclient -N -L \\\\{self.host}'''
         print(Fore.RED + "[*]" + Fore.GREEN + f' [{port}] [SMB Shares]' + Fore.MAGENTA + f' [EXEC] ' + Fore.BLUE + smbclientcmd + Fore.RESET)
-        exec_cmd_bash(f"{cmdnmap} > smb/{resultout2}")
+        exec_cmd_bash(f"{smbclientcmd} > smb/{resultout2}")
         if self.debug:
-            logging.debug(f'[SMB Shares ENDED] {cmdnmap}')
+            logging.debug(f'[SMB Shares ENDED] {smbclientcmd}')
 
         resultout3 = f"smb_vuln_{self.host}:{port}"
         cmdnmap2 = f"nmap --script=smb-vuln-cve2009-3103.nse,smb-vuln-ms06-025.nse,smb-vuln-ms07-029.nse,smb-vuln-ms08-067.nse,smb-vuln-ms10-054.nse,smb-vuln-ms10-061.nse,smb-vuln-ms17-010.nse -p {port} -oN smb/{resultout3} {self.host}"
