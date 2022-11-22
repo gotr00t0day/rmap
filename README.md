@@ -1,7 +1,7 @@
 
 # RMap - Reconnaissance Mapper
 
-![showcase](https://i.imgur.com/5TufzEU.png)
+![showcase](https://i.imgur.com/8t3Oe3r.png)
 
 ## Install
 
@@ -48,13 +48,18 @@ $ sudo rmap 10.10.10.10
 processLimit = 3
 
 [nmap]
-# Enable nmap OS check; otherwise, use only ICMP TTL for OS detection
-OSCheck = true
-allports = false
+allports = true
 arguments = -sC -sV
 
 [ffuf]
 wordlist = /usr/share/seclists/Discovery/Web-Content/big.txt
+
 # Available formats: json, ejson, html, md, csv, ecsv
 outtype = md
+
+# Scan recursively
+recursion = true
+recursionDepth = 1
+
+arguments = -fc 302
 ```
